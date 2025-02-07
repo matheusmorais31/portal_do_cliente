@@ -1,0 +1,202 @@
+/* Estilos Gerais */
+body {
+    font-family: 'Inter';
+    color: #333;
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    padding: 20px;
+  }
+
+h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #000000;
+    margin-top: 5%;
+}
+
+/* Filtro de Busca */
+.search-container {
+    margin-bottom: 20px;
+}
+
+#searchInput {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #ffff;
+    color: #333;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+#searchInput:focus {
+    background-color: #fff;
+    outline: none;
+    border-color: #2EC2D6;
+}
+
+/* Estilos da Lista de Grupos */
+.group-container {
+    margin-top: 2%;
+    border: 1px solid #ddd;
+    background-color: #f4f4f4;
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.group-container:hover {
+    transform: scale(1.02);
+}
+
+.group-item {
+    display: grid;
+    grid-template-columns: 50px 2.5fr 1fr; /* Primeira coluna com tamanho fixo para o ícone */
+    align-items: center; /* Alinha verticalmente os itens no centro */
+    gap: 10px; /* Espaçamento menor entre as colunas */
+}
+
+.group-status {
+    text-align: center;
+    padding: 0;
+    margin: 0;
+}
+
+.group-status img {
+    width: 50px; /* Tamanho fixo para o ícone */
+    height: 50px;
+    object-fit: cover; /* Garante que a imagem não distorça */
+}
+
+.group-info {
+    flex-grow: 1;
+    margin-left: 0px; /* Remove a margem entre o ícone e o texto */
+}
+
+.group-info div {
+    margin: 5px 0;
+    word-wrap: break-word;
+}
+
+/* Barra de Ações dos Grupos */
+.group-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center; /* Alinha os ícones verticalmente no centro */
+    gap: 10px; /* Espaçamento entre os ícones de ação */
+}
+
+.group-actions a {
+    position: relative; /* Necessário para posicionar o tooltip corretamente */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-icon img,
+.delete-icon img {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.edit-icon img:hover,
+.delete-icon img:hover {
+    transform: scale(1.5);
+}
+
+/* Barra de Ícones para Adicionar Grupos */
+.icons-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.icon-link {
+    position: relative;
+    margin-right: 10px;
+}
+
+.icon {
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+.icon:hover {
+    transform: scale(1.5);
+}
+
+/* Tooltip Personalizado para os Ícones */
+.tooltip-text {
+    visibility: hidden;
+    width: max-content;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%; /* Posição acima do ícone */
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    white-space: nowrap;
+}
+
+.tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%; /* Posição abaixo do tooltip */
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+.icon-link:hover .tooltip-text,
+.edit-icon:hover .tooltip-text,
+.delete-icon:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Mensagem de "Nenhum Grupo Encontrado" */
+.no-groups {
+    text-align: center;
+    margin-top: 20px;
+    color: #000;
+    font-size: 18px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .group-item {
+        grid-template-columns: 1fr; /* Ajuste para uma coluna em telas menores */
+    }
+
+    .group-actions {
+        justify-content: center;
+        margin-top: 10px;
+    }
+
+    .icons-bar {
+        justify-content: center;
+    }
+}
+
+/* Estilo de Botões e Links Escondidos */
+a:empty {
+    display: none;
+}

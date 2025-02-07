@@ -1,0 +1,351 @@
+/* ===== Reset/Configuração Básica ===== */
+body {
+  font-family: 'Inter';
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #000;
+  margin-top: 5%;
+}
+
+.container {
+  padding: 20px;
+  margin-top: 5%;
+}
+
+.container h2 {
+  margin-bottom: 20px;
+}
+
+/* ============================================== */
+/* ================ FILTROS ===================== */
+/* ============================================== */
+.filters-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+/* Campo de busca por número do pedido */
+.search-container {
+  flex: 1 1 300px;
+}
+
+/* Campos de entrada (Pedido, NF, Produto) */
+.search-input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #aaa;
+  background-color: #f9f9f9;
+  color: #333;
+  font-size: 16px;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: #337366;
+  background-color: #fff;
+  outline: none;
+}
+
+/* Contêiner dos outros filtros */
+.filter-container {
+  flex: 1 1 200px;
+}
+
+/* Caso use SELECTs para filtros (exemplo) */
+.filter-select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #aaa;
+  background-color: #fff;
+  color: #333;
+  font-size: 16px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.filter-select:focus {
+  border-color: #337366;
+  box-shadow: 0 0 5px rgba(51,115,102,0.5);
+  outline: none;
+}
+
+/* Botão "Limpar Filtros" */
+.clear-filters-button {
+  padding: 10px 15px;
+  background-color: #1F6B5C;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.clear-filters-button:hover {
+  transform: scale(1.02);
+}
+
+/* RESPONSIVIDADE dos filtros */
+@media (max-width: 768px) {
+  .filters-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .search-input,
+  .filter-select,
+  .clear-filters-button {
+    width: 100%;
+  }
+}
+
+/* ============================================== */
+/* =========== SEÇÃO DOS PEDIDOS ================ */
+/* ============================================== */
+.pedido-wrapper {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+}
+
+/* Cabeçalho (com os steps) */
+.pedido-cabecalho {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative; /* p/ posicionamento absoluto do .pedido-info */
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+/* Informações do pedido (ex: "Pedido: #12345") */
+.pedido-info {
+  position: absolute;
+  left: 1rem;
+  top: 20%;
+  transform: translateY(-50%);
+}
+
+.pedido-numero {
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+/* Steps (Status) */
+.step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.status-icon {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 4px;
+}
+
+/* Bolinha de status */
+.circle {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #656565;
+  border-radius: 50%;
+  background-color: #65656541;
+  margin: 0;
+  transition: border-color 0.3s, background-color 0.3s;
+}
+.circle.active {
+  border-color: #00ff62;
+  background-color: #00ff6241;
+}
+
+/* Texto do step */
+.label {
+  margin-top: 6px;
+  font-size: 0.9rem;
+  color: #333;
+  text-align: center;
+}
+
+/* Linha entre steps */
+.step-line {
+  width: 60px;
+  height: 2px;
+  background-color: #656565;
+  transition: background-color 0.3s;
+}
+
+/* Linha "ativa" fica verde */
+.step-line.active {
+  background-color: #23ff77;
+}
+
+/* Dados de Entrega */
+.delivery-info {
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin: 1rem;
+  background-color: #fff;
+}
+
+.delivery-info h3 {
+  margin-top: 0;
+  font-size: 1rem;
+  color: #1F6B5C;
+}
+
+/* ============================================== */
+/* ============ BOTÕES DE AÇÃO ================== */
+/* ============================================== */
+/* .pedido-actions = contêiner sticky com 2 "linhas": 
+   - linha para "Ver Produtos" 
+   - linha para botões DANFE */
+.pedido-actions {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  
+  display: flex;
+  flex-direction: column;   /* Duas linhas */
+  gap: 0.5rem;             /* Espaço vertical entre as linhas */
+
+  background-color: #fff;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.botao-produtos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.botao-danfe-group {
+  display: flex;
+  flex-wrap: wrap; 
+  gap: 1rem;
+}
+
+/* Botão padrão */
+.btn-toggle {
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1.25rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+/* Botão "Ver Produtos" => cor #3C4855 */
+.btn-produtos {
+  background-color: #3C4855;
+}
+.btn-produtos:hover {
+  transform: scale(1.02);
+}
+
+/* Botão DANFE */
+.nf-button {
+  background-color: #1F6B5C;
+}
+.nf-button:hover {
+  transform: scale(1.02);
+}
+
+/* "NF não disponível" */
+.nf-indisponivel {
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  background-color: #ccc;
+  color: #666;
+  border-radius: 5px;
+  font-size: 0.9rem;
+}
+
+/* ============================================== */
+/* ===== DETALHES DO PEDIDO (Produtos) ========== */
+/* ============================================== */
+.pedido-detalhes {
+  padding: 1rem 1.5rem;
+  background-color: #fff;
+}
+
+.pedido-detalhes h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+/* Oculto inicialmente */
+.hidden {
+  display: none;
+}
+
+.pedido-detalhe {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eaeaea;
+}
+.pedido-detalhe:last-child {
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+/* Grelha interna de dados do item */
+.pedido-detalhe p {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.pedido-detalhe p strong {
+  text-align: right;
+}
+
+/* ============================================== */
+/* ============= RESPONSIVIDADE ================= */
+/* ============================================== */
+@media (max-width: 768px) {
+  /* Reorganizar cabeçalho do pedido */
+  .pedido-cabecalho {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .pedido-info {
+    position: static;
+    transform: none;
+    margin-bottom: 1rem;
+  }
+  .step-indicator {
+    justify-content: flex-start;
+    flex: none;
+    width: 100%;
+  }
+  .step-line {
+    display: none; /* Ocultar em telas menores se desejar */
+  }
+}

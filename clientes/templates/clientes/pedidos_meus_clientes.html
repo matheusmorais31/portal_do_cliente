@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load l10n %}
+{% load humanize %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/meus_pedidos.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2>Pedidos dos Meus Clientes</h2>
+
+  <!-- Seção de Filtros: somente Pedido, NF e Produto -->
+  <div class="filters-container">
+    <!-- Filtro por Número do Pedido -->
+    <div class="search-container">
+      <input type="text" id="pedidoFilter" class="search-input" placeholder="Buscar pedidos pelo Número...">
+    </div>
+
+    <!-- Filtro por NF -->
+    <div class="filter-container">
+      <input type="text" id="nfFilter" class="search-input" placeholder="Buscar pedidos pela NF...">
+    </div>
+
+    <!-- Filtro por Produto -->
+    <div class="filter-container">
+      <input type="text" id="produtoFilter" class="search-input" placeholder="Buscar pedidos pelo Produto...">
+    </div>
+
+    <!-- Botão para limpar filtros -->
+    <div class="filter-container">
+      <button id="clearFilters" class="clear-filters-button">Limpar Filtros</button>
+    </div>
+  </div>
+
+  <!-- Lista de Pedidos -->
+  <div class="pedido-list" id="pedidoList">
+    {% if pedidos %}
+      <!-- Agrupamos os pedidos pelo número do Pedido (PEDIDO) -->
+      {% regroup pedidos|dictsortreversed:"PEDIDO" by PEDIDO as pedidos_agrupados %}
+
+      {% for group in pedidos_agrupados %}
+        {% with primeiro=group.list|first %}
+        {% if primeiro %}
+          <!-- Container principal de cada pedido -->
+          <div class="pedido-container"
+               data-pedido="{{ group.grouper|default:'' }}"
+               data-nf="{{ primeiro.NF_NUMERO|default:'' }}"
+               data-produto="{{ primeiro.PRODUTO_DESCRICAO|default:'' | lower }}">
+
+            <!-- SEÇÃO DO PEDIDO -->
+            <section class="pedido-wrapper">
+              <!-- CABEÇALHO DO PEDIDO -->
+              <header class="pedido-cabecalho">
+                <!-- Número do Pedido e Cliente -->
+                <div class="pedido-info">
+                  <p class="pedido-numero"><strong>Pedido:</strong> #{{ group.grouper }}</p>
+                  <!-- Exemplo: exibir o Cliente final que fez esse pedido -->
+                  <p class="pedido-numero"><strong>Cliente Final:</strong> {{ primeiro.NOME_CLIENTE }}</p>
+                </div>
+
+                <!-- Status (Steps) -->
+                <div class="step-indicator">
+                  <div class="step">
+                    <img src="{% static 'images/pedido_incluido.png' %}" alt="Pedido Incluído" class="status-icon">
+                    <div class="circle {% if primeiro.is_included %}active{% endif %}"></div>
+                    <div class="label">Pedido Incluído</div>
+                  </div>
+
+                  <div class="step-line {% if primeiro.is_partial or primeiro.is_integral %}active{% endif %}"></div>
+
+                  <div class="step">
+                    <img src="{% static 'images/faturamento_parcial.png' %}" alt="Faturamento Parcial" class="status-icon">
+                    <div class="circle {% if primeiro.is_partial %}active{% endif %}"></div>
+                    <div class="label">Faturamento Parcial</div>
+                  </div>
+
+                  <div class="step-line {% if primeiro.is_integral %}active{% endif %}"></div>
+
+                  <div class="step">
+                    <img src="{% static 'images/faturamento_integral.png' %}" alt="Faturamento Integral" class="status-icon">
+                    <div class="circle {% if primeiro.is_integral %}active{% endif %}"></div>
+                    <div class="label">Faturamento Integral</div>
+                  </div>
+                </div>
+              </header>
+
+              <!-- ENDEREÇO DE ENTREGA (ABAIXO DO STEP) -->
+              <div class="delivery-info">
+                <h3>Dados da Entrega</h3>
+                <p><strong>Cidade:</strong> {{ primeiro.CIDADE_ENTREGA }}</p>
+                <p><strong>UF:</strong> {{ primeiro.UF_ENTREGA }}</p>
+                <p><strong>Endereço:</strong> {{ primeiro.ENDERECO_ENTREGA }}</p>
+                <p><strong>Número:</strong> {{ primeiro.NUMERO_ENTREGA }}</p>
+                
+                {% if primeiro.NF_NUMERO %}
+                  <p><strong>NF:</strong> {{ primeiro.NF_NUMERO }}</p>
+                {% endif %}
+
+                <!-- Formatação de valor monetário -->
+                <p>
+                  <strong>Valor Total:</strong>
+                  R${{ primeiro.TOTAL_NF|floatformat:2|intcomma }}
+                </p>
+              </div>
+
+              <!-- Botão para exibir detalhes do pedido -->
+              <div class="pedido-actions">
+                <button class="btn-toggle" data-target="detalhes-{{ forloop.counter }}">
+                  Ver Produtos
+                </button>
+              </div>
+
+              <!-- DETALHES DO PEDIDO (oculto no início) -->
+              <article class="pedido-detalhes hidden" id="detalhes-{{ forloop.counter }}">
+                <h3>Produtos</h3>
+                {% for pedido in group.list %}
+                  <div class="pedido-detalhe">
+                    <p><strong>Data Inclusão:</strong> {{ pedido.DT_INCLUSAO|date:"d/m/Y" }}</p>
+                    <p><strong>Produto:</strong> {{ pedido.PRODUTO_DESCRICAO }}</p>
+                    <p><strong>Quantidade:</strong> {{ pedido.PEDIDO_QUANTIDADE }}</p>
+                    
+                    <!-- Formatação de valor monetário item a item -->
+                    <p>
+                      <strong>Valor:</strong>
+                      R${{ pedido.NF_TOTAL_ITEM|floatformat:2|intcomma }}
+                    </p>
+
+                    <p><strong>Status:</strong> {{ pedido.STATUS_PEDIDO }}</p>
+                    {% if pedido.NF_NUMERO %}
+                      <p><strong>NF:</strong> {{ pedido.NF_NUMERO }}</p>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              </article>
+            </section>
+          </div>
+        {% else %}
+          <p style="color:red;">Nenhum item neste grupo.</p>
+        {% endif %}
+        {% endwith %}
+      {% endfor %}
+
+    {% else %}
+      <p>Nenhum pedido encontrado.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Toggle de "Ver Produtos"/"Ocultar Produtos"
+    const toggleButtons = document.querySelectorAll('.btn-toggle');
+    toggleButtons.forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = btn.getAttribute('data-target');
+        const detalhes = document.getElementById(targetId);
+        if (detalhes) {
+          detalhes.classList.toggle('hidden');
+          btn.textContent = detalhes.classList.contains('hidden')
+            ? "Ver Produtos"
+            : "Ocultar Produtos";
+        }
+      });
+    });
+
+    // Filtros: Pedido, NF e Produto
+    const pedidoFilter = document.getElementById('pedidoFilter');
+    const nfFilter = document.getElementById('nfFilter');
+    const produtoFilter = document.getElementById('produtoFilter');
+    const clearFiltersButton = document.getElementById('clearFilters');
+
+    const pedidoList = document.getElementById('pedidoList');
+    const pedidos = pedidoList.getElementsByClassName('pedido-container');
+
+    function filterPedidos() {
+      const pedidoValue = pedidoFilter.value.toLowerCase();
+      const nfValue = nfFilter.value.toLowerCase();
+      const produtoValue = produtoFilter.value.toLowerCase();
+
+      Array.from(pedidos).forEach(pedido => {
+        const dataPedido = (pedido.getAttribute('data-pedido') || '').toLowerCase();
+        const dataNf = (pedido.getAttribute('data-nf') || '').toLowerCase();
+        const dataProduto = (pedido.getAttribute('data-produto') || '').toLowerCase();
+
+        let match = true;
+
+        // Filtro por Pedido
+        if (pedidoValue && !dataPedido.includes(pedidoValue)) {
+          match = false;
+        }
+        // Filtro por NF
+        if (nfValue && !dataNf.includes(nfValue)) {
+          match = false;
+        }
+        // Filtro por Produto
+        if (produtoValue && !dataProduto.includes(produtoValue)) {
+          match = false;
+        }
+
+        // Exibe ou esconde o pedido
+        pedido.style.display = match ? "" : "none";
+      });
+    }
+
+    // Eventos de input em cada filtro
+    pedidoFilter.addEventListener('input', filterPedidos);
+    nfFilter.addEventListener('input', filterPedidos);
+    produtoFilter.addEventListener('input', filterPedidos);
+
+    // Limpar filtros
+    clearFiltersButton.addEventListener('click', function() {
+      pedidoFilter.value = "";
+      nfFilter.value = "";
+      produtoFilter.value = "";
+      filterPedidos();
+    });
+  });
+</script>
+{% endblock %}

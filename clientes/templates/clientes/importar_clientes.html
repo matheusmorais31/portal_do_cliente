@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/importar_clientes.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Importar Clientes</h2>
+
+    <!-- Campo de busca -->
+    <div class="mb-3">
+        <input type="text" id="searchInput" class="form-control" placeholder="Digite o CNPJ/CPF ou Razão Social...">
+    </div>
+
+    <!-- Formulário de Importação -->
+    <form method="post">
+        {% csrf_token %}
+        <div id="clientList" class="client-list">
+            <p class="text-muted">Digite pelo menos 3 caracteres para buscar clientes.</p>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3" disabled id="importButton">Importar Selecionados</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        const clientList = document.getElementById('clientList');
+        const importButton = document.getElementById('importButton');
+
+        searchInput.addEventListener('keyup', function() {
+            const searchTerm = searchInput.value.trim();
+
+            if (searchTerm.length > 2) { // Realiza a busca apenas com mais de 2 caracteres
+                fetch(`/clientes/buscar-clientes/?q=${encodeURIComponent(searchTerm)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        clientList.innerHTML = ''; // Limpa os resultados anteriores
+                        if (data.length > 0) {
+                            data.forEach(client => {
+                                const item = document.createElement('div');
+                                item.classList.add('client-item');
+                                item.innerHTML = `
+                                    <input type="checkbox" name="clientes" value="${client.value}" id="client-${client.value}">
+                                    <label for="client-${client.value}">${client.label}</label>
+                                `;
+                                clientList.appendChild(item);
+                            });
+
+                            // Habilita o botão de importação se houver resultados
+                            importButton.disabled = false;
+                        } else {
+                            clientList.innerHTML = '<p class="text-muted">Nenhum cliente encontrado.</p>';
+                            importButton.disabled = true;
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Erro na busca de clientes:', err);
+                        clientList.innerHTML = '<p class="text-danger">Erro ao buscar clientes. Tente novamente mais tarde.</p>';
+                        importButton.disabled = true;
+                    });
+            } else {
+                clientList.innerHTML = '<p class="text-muted">Digite pelo menos 3 caracteres para buscar clientes.</p>';
+                importButton.disabled = true;
+            }
+        });
+    });
+</script>
+{% endblock %}

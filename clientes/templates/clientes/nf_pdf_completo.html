@@ -1,0 +1,217 @@
+<!-- clientes/templates/clientes/nf_pdf_completo.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Nota Fiscal - {{ note.ide.nNF|default:"Sem Número" }}</title>
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 12px; margin: 20px; }
+    h1, h2, h3 { color: #333; }
+    .section { margin-bottom: 20px; }
+    .section h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+    table, th, td { border: 1px solid #ddd; }
+    th, td { padding: 8px; text-align: left; }
+    .small { font-size: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Nota Fiscal Eletrônica</h1>
+  
+  <!-- Seção: Identificação (ide) -->
+  <div class="section">
+    <h2>Identificação (Ide)</h2>
+    {% if note.ide %}
+      <table>
+        {% for key, value in note.ide.items %}
+          <tr>
+            <th>{{ key }}</th>
+            <td>{{ value }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% else %}
+      <p>Sem informações de identificação.</p>
+    {% endif %}
+  </div>
+  
+  <!-- Seção: Emitente -->
+  <div class="section">
+    <h2>Emitente</h2>
+    {% if note.emit %}
+      <table>
+        {% for key, value in note.emit.items %}
+          {% if key != "enderEmit" %}
+            <tr>
+              <th>{{ key }}</th>
+              <td>{{ value }}</td>
+            </tr>
+          {% endif %}
+        {% endfor %}
+      </table>
+      {% if note.emit.enderEmit %}
+        <h3>Endereço do Emitente</h3>
+        <table>
+          {% for key, value in note.emit.enderEmit.items %}
+            <tr>
+              <th>{{ key }}</th>
+              <td>{{ value }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      {% endif %}
+    {% else %}
+      <p>Sem informações do emitente.</p>
+    {% endif %}
+  </div>
+  
+  <!-- Seção: Destinatário -->
+  <div class="section">
+    <h2>Destinatário</h2>
+    {% if note.dest %}
+      <table>
+        {% for key, value in note.dest.items %}
+          {% if key != "enderDest" %}
+            <tr>
+              <th>{{ key }}</th>
+              <td>{{ value }}</td>
+            </tr>
+          {% endif %}
+        {% endfor %}
+      </table>
+      {% if note.dest.enderDest %}
+        <h3>Endereço do Destinatário</h3>
+        <table>
+          {% for key, value in note.dest.enderDest.items %}
+            <tr>
+              <th>{{ key }}</th>
+              <td>{{ value }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      {% endif %}
+    {% else %}
+      <p>Sem informações do destinatário.</p>
+    {% endif %}
+  </div>
+  
+  <!-- Seção: Produtos (det) -->
+  <div class="section">
+    <h2>Produtos</h2>
+    {% if note.det %}
+      {% for det in note.det %}
+        <h3>Item {{ det.nItem }}</h3>
+        <table>
+          {% if det.prod %}
+            <tr><th colspan="2">Dados do Produto</th></tr>
+            {% for key, value in det.prod.items %}
+              <tr>
+                <th>{{ key }}</th>
+                <td>{{ value }}</td>
+              </tr>
+            {% endfor %}
+          {% endif %}
+          {% if det.imposto %}
+            <tr><th colspan="2">Impostos</th></tr>
+            {% for imp_key, imp_value in det.imposto.items %}
+              <tr>
+                <th colspan="2">{{ imp_key }}</th>
+              </tr>
+              {% for key, value in imp_value.items %}
+                <tr>
+                  <td style="padding-left: 20px;">{{ key }}</td>
+                  <td>{{ value }}</td>
+                </tr>
+              {% endfor %}
+            {% endfor %}
+          {% endif %}
+        </table>
+      {% endfor %}
+    {% else %}
+      <p>Sem itens de produto.</p>
+    {% endif %}
+  </div>
+  
+  <!-- Seção: Totais -->
+  <div class="section">
+    <h2>Totais</h2>
+    {% if note.total %}
+      <table>
+        {% for key, value in note.total.items %}
+          <tr>
+            <th>{{ key }}</th>
+            <td>{{ value }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% else %}
+      <p>Sem informações totais.</p>
+    {% endif %}
+  </div>
+  
+  <!-- Seção: Transporte -->
+  <div class="section">
+    <h2>Transporte</h2>
+    {% if note.transp %}
+      <table>
+        {% for key, value in note.transp.items %}
+          <tr>
+            <th>{{ key }}</th>
+            <td>{{ value }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% else %}
+      <p>Sem informações de transporte.</p>
+    {% endif %}
+  </div>
+  
+  <!-- Seção: Cobrança -->
+  <div class="section">
+    <h2>Cobrança</h2>
+    {% if note.cobr %}
+      {% if note.cobr.fat %}
+        <h3>Fatura</h3>
+        <table>
+          {% for key, value in note.cobr.fat.items %}
+            <tr>
+              <th>{{ key }}</th>
+              <td>{{ value }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      {% endif %}
+      {% if note.cobr.dup %}
+        <h3>Duplicatas</h3>
+        <table>
+          <tr>
+            {% for key in note.cobr.dup.0.keys %}
+              <th>{{ key }}</th>
+            {% endfor %}
+          </tr>
+          {% for dup in note.cobr.dup %}
+            <tr>
+              {% for key, value in dup.items %}
+                <td>{{ value }}</td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </table>
+      {% endif %}
+    {% else %}
+      <p>Sem informações de cobrança.</p>
+    {% endif %}
+  </div>
+  
+  <!-- Seção: Informações Adicionais -->
+  <div class="section">
+    <h2>Informações Adicionais</h2>
+    {% if note.infAdic %}
+      <p>{{ note.infAdic }}</p>
+    {% else %}
+      <p>Sem informações adicionais.</p>
+    {% endif %}
+  </div>
+
+</body>
+</html>

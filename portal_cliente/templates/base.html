@@ -1,0 +1,143 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Portal Rotoplastyc{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <link rel="shortcut icon" href="{% static 'images/favicon.png' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Menu Superior -->
+    <header class="top-bar">
+        <div class="menu-icon" onclick="toggleMenu()">
+            <span class="icon">&#9776;</span>
+        </div>
+
+        <!-- Opções à Direita na Barra Superior -->
+        <div class="top-bar-right">
+            <!-- Link "Sair" -->
+            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="logout-link">Sair</a>
+            
+            <!-- Formulário de Logout -->
+            <form id="logout-form" action="" method="POST" style="display: none;">
+                {% csrf_token %}
+                <button type="submit">Sair</button>
+            </form>
+        </div>
+    </header>
+
+    <!-- Menu Lateral -->
+    <nav class="side-bar" id="side-bar">
+        <ul>
+            <li>
+                <a href="{% url 'home' %}">
+                    <img src="{% static 'images/home-icon.png' %}" alt="Home">
+                    <span class="menu-label">Home</span>
+                </a>
+            </li>
+            <!-- Menu Pedidos -->
+            <li> 
+                <a href="#" onclick="toggleSubmenu(event, this)">
+                    <img src="{% static 'images/pedidos-icon.png' %}" alt="Documentos">
+                    <span class="menu-label">Pedidos</span>
+                </a>
+                <ul class="submenu">
+                    <li><a href="{% url 'clientes:meus_pedidos' %}">Meus Pedidos</a></li>
+                    <li><a href="{% url 'clientes:pedidos_meus_clientes' %}">Pedidos dos meus clientes</a></li>
+                </ul>
+            </li>
+            <!--Gerenciamento de Clientes-->
+            <li> 
+                <a href="#" onclick="toggleSubmenu(event, this)">
+                    <img src="{% static 'images/cliente-icon.png' %}" alt="Documentos">
+                    <span class="menu-label">Clientes</span>
+                </a>
+                <ul class="submenu">
+                    <li><a href="{% url 'clientes:listar_clientes' %}">Clientes Importados</a></li>
+                    <li><a href="{% url 'clientes:importar_clientes' %}">Importar Clientes</a></li>
+                    
+                </ul>
+            </li>
+            <li> 
+                <a href="#" onclick="toggleSubmenu(event, this)">
+                    <img src="{% static 'images/administracao-icon.png' %}" alt="Documentos">
+                    <span class="menu-label">Administração</span>
+                </a>
+                <ul class="submenu">
+                    <li><a href="{% url 'usuarios:lista_usuarios' %}">Usuários</a></li>
+                    <li><a href="{% url 'usuarios:lista_grupos' %}">Grupos de Usuários</a></li>
+                    <li><a href="{% url 'usuarios:liberar_permissoes' %}">Permissões</a></li>
+                    
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Conteúdo da página -->
+    <div class="main-content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Logo no canto inferior direito -->
+    <div class="logo-bottom-right">
+        <img src="{% static 'images/logo.png' %}" alt="Logo">
+    </div>
+
+    <!-- Scripts globais -->
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+        function toggleMenu() {
+            var sideBar = document.getElementById("side-bar");
+            sideBar.classList.toggle("expanded");
+
+            if (!sideBar.classList.contains("expanded")) {
+                var submenus = document.querySelectorAll('.submenu');
+                submenus.forEach(function(submenu) {
+                    submenu.classList.remove('open');
+                });
+            }
+        }
+
+        function toggleSubmenu(event, element) {
+            event.preventDefault();
+
+            if (document.getElementById("side-bar").classList.contains("expanded")) {
+                var submenu = element.nextElementSibling;
+                submenu.classList.toggle('open');
+                var allSubmenus = document.querySelectorAll('.submenu');
+                allSubmenus.forEach(function(s) {
+                    if (s !== submenu) {
+                        s.classList.remove('open');
+                    }
+                });
+            }
+        }
+
+        document.addEventListener('click', function(event) {
+            // Nenhuma interação com o menu de perfil, portanto, este bloco pode ser removido ou mantido vazio
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

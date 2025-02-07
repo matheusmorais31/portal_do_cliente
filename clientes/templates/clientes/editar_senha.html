@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/editar_senha.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Alterar Senha</h1>
+    <p>Cliente: <strong>{{ cliente.razao_social }}</strong></p>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        
+        <button type="submit" class="btn btn-primary">Salvar Nova Senha</button>
+        <a href="{% url 'clientes:listar_clientes' %}" class="btn btn-secondary">Cancelar</a>
+        
+        <!-- Texto de ajuda geral -->
+        <small class="form-text text-muted">
+            A senha deve ter pelo menos 8 caracteres, incluindo números, letras maiúsculas, letras minúsculas e caracteres especiais.
+        </small>
+    </form>
+</div>
+{% endblock %}

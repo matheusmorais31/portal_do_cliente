@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/listar_clientes.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Clientes Importados</h1>
+
+    <!-- Filtros para Busca e Categorias -->
+    <div class="filters-container">
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="Buscar clientes pela Razão Social...">
+        </div>
+        <div class="filter-container">
+            <input type="text" id="cpfCnpjFilter" class="search-input" placeholder="Buscar clientes por CNPJ/CPF...">
+        </div>
+        <div class="filter-container">
+            <select id="statusFilter" class="filter-select">
+                <option value="">Todos os Status</option>
+                <option value="ativo">Ativo</option>
+                <option value="inativo">Inativo</option>
+            </select>
+        </div>
+        <div class="filter-container">
+            <select id="cityFilter" class="filter-select">
+                <option value="">Todas as Cidades</option>
+                {% for cidade in cidades %}
+                    {% if cidade %}
+                        <option value="{{ cidade }}">{{ cidade }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <!-- Lista de Clientes -->
+    <div class="client-list" id="clientList">
+        {% for user in page_obj %}
+        <div class="client-container" 
+            data-status="{% if user.is_active %}ativo{% else %}inativo{% endif %}" 
+            data-city="{{ user.clienteprofile.cidade|default:'' }}"
+            data-cpf-cnpj="{{ user.clienteprofile.cnpj_cpf|default:'' }}"
+            data-razao-social="{{ user.clienteprofile.razao_social|default:'' | lower }}">   
+            <div class="client-item">
+                <div class="client-info">
+                    <div class="client-grid">
+                        <div><strong>Código do Cliente:</strong> {{ user.clienteprofile.codigo_cliente|default:"-" }}</div>
+                        <div><strong>CNPJ/CPF:</strong> {{ user.clienteprofile.cnpj_cpf|default:"-" }}</div>
+                        <div><strong>Razão Social:</strong> {{ user.clienteprofile.razao_social|default:"-" }}</div>
+                        <div><strong>Nome Fantasia:</strong> {{ user.clienteprofile.nome_fantasia|default:"-" }}</div>
+                        <div><strong>Rua:</strong> {{ user.clienteprofile.rua|default:"-" }}</div>
+                        <div><strong>Número:</strong> {{ user.clienteprofile.numero|default:"-" }}</div>
+                        <div><strong>Bairro:</strong> {{ user.clienteprofile.bairro|default:"-" }}</div>
+                        <div><strong>Cidade:</strong> {{ user.clienteprofile.cidade|default:"-" }}</div>
+                        <div><strong>Estado:</strong> {{ user.clienteprofile.uf|default:"-" }}</div>
+                        <div><strong>Classificações:</strong>
+                            {% if user.clienteprofile.classificacoes.exists %}
+                                {% for classificacao in user.clienteprofile.classificacoes.all %}
+                                    {{ classificacao.nome }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                Sem classificações
+                            {% endif %}
+                        </div>
+                        <div><strong>Status:</strong> 
+                            {% if user.is_active %}
+                                <span class="status-active">Ativo</span>
+                            {% else %}
+                                <span class="status-inactive">Inativo</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="client-actions">
+                    {% if perms.clientes.can_change_cliente %}
+                        <a href="{% url 'clientes:editar_senha' user.clienteprofile.id %}" class="action-icon">
+                            <img src="{% static 'images/edit-icon.png' %}" alt="Editar Cliente">
+                            <span class="tooltip-text">Editar</span>
+                        </a>
+                    {% endif %}
+                    {% if perms.clientes.can_delete_cliente %}
+                        <form action="" method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="action-icon" title="Excluir Cliente" onclick="return confirm('Tem certeza que deseja excluir este cliente?');">
+                                <img src="{% static 'images/delete-icon.png' %}" alt="Excluir Cliente">
+                                <span class="tooltip-text">Excluir</span>
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="no-clients-message">Nenhum cliente encontrado.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Paginação -->
+    <div class="pagination">
+        <span class="page-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; Primeira</a>
+                <a href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+            {% endif %}
+            <span class="current">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Próxima</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">Última &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</div>
+
+<script src="{% static 'js/listar_clientes.js' %}"></script>
+{% endblock %}

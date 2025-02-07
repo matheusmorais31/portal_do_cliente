@@ -1,0 +1,15 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Logout</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <h2>Logout</h2>
+    <p>Você foi desconectado com sucesso.</p>
+    <a href="{% url 'login' %}">Fazer Login Novamente</a>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!-- usuarios/templates/usuarios/liberar_permissoes.html -->
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Liberação de Permissões" %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/liberar_permissoes.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>{% trans "Liberação de Permissões" %}</h2>
+
+    <div id="mensagens">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <form id="form-permissoes" method="POST" action="{% url 'usuarios:liberar_permissoes' %}">
+        {% csrf_token %}
+        
+        <!-- Campo de busca -->
+        <div class="form-group">
+            <label for="buscar_usuario_grupo">{% trans "Buscar Usuário ou Grupo:" %}</label>
+            <input type="text" id="buscar_usuario_grupo" class="form-control" placeholder="{% trans "Digite o nome do usuário ou grupo..." %}" autocomplete="off">
+            <ul id="resultados_pesquisa" class="list-group resultados-pesquisa"></ul>
+        </div>
+
+        <!-- Seleção de Aplicação -->
+        <div class="form-group" id="selecionar_app_container" style="display: none;">
+            <label for="selecionar_app">{% trans "Selecionar Aplicação:" %}</label>
+            <select id="selecionar_app" class="form-control">
+                <option value="">{% trans "-- Selecionar Aplicação --" %}</option>
+            </select>
+        </div>
+
+        <!-- Exibição de Permissões -->
+        <div class="form-group" id="permissoes_container" style="display: none;">
+            <h3>{% trans "Permissões para" %} <span id="nome_usuario_grupo"></span> {% trans "na Aplicação" %} <span id="nome_app"></span></h3>
+            <button type="button" class="btn btn-third mb-2 selecionar_tudo">{% trans "Selecionar Tudo" %}</button>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>{% trans "Permissão" %}</th>
+                        <th>{% trans "Selecionar" %}</th>
+                    </tr>
+                </thead>
+                <tbody class="lista_permissoes">
+                    <!-- Permissões carregadas dinamicamente -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Botões -->
+        <div class="form-buttons">
+            <button type="submit" class="btn btn-primary" onclick="window.location.href='{% url 'usuarios:duplicar_acesso' %}'">{% trans "Duplicar acessos" %}</button>
+            <button type="button" class="btn btn-secondary" onclick="window.location.href='{% url 'usuarios:lista_usuarios' %}'">{% trans "Cancelar" %}</button>
+            <button type="submit" class="btn btn-primary">{% trans "Salvar" %}</button>
+        </div>
+
+        <input type="hidden" name="usuario_grupo_id" id="usuario_grupo_id">
+        <input type="hidden" name="tipo" id="tipo">
+        <input type="hidden" name="app_label" id="app_label">
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+<script>
+    $(document).ready(function () {
+        var usuarioGrupoSelecionadoId = null;
+        var tipoSelecionado = null;
+
+        // Busca dinâmica de usuários ou grupos
+        $('#buscar_usuario_grupo').on('input', function () {
+            var query = $(this).val();
+            if (query.length > 0) {
+                $.ajax({
+                    url: "{% url 'usuarios:sugestoes' %}",
+                    data: { 'q': query },
+                    success: function (data) {
+                        $('#resultados_pesquisa').empty();
+                        data.forEach(function (item) {
+                            $('<li>')
+                                .text(`${item.nome} (${item.tipo.charAt(0).toUpperCase() + item.tipo.slice(1)})`)
+                                .addClass('list-group-item list-group-item-action')
+                                .data('id', item.id)
+                                .data('tipo', item.tipo)
+                                .appendTo('#resultados_pesquisa');
+                        });
+                    },
+                    error: function (xhr) {
+                        console.error("Erro ao buscar:", xhr.responseText);
+                    }
+                });
+            } else {
+                $('#resultados_pesquisa').empty();
+            }
+        });
+
+        // Seleção de usuário/grupo
+        $('#resultados_pesquisa').on('click', 'li', function () {
+            var nome = $(this).text();
+            var id = $(this).data('id');
+            var tipo = $(this).data('tipo');
+
+            usuarioGrupoSelecionadoId = id;
+            tipoSelecionado = tipo;
+
+            $('#buscar_usuario_grupo').val(nome);
+            $('#usuario_grupo_id').val(id);
+            $('#tipo').val(tipo);
+            $('#nome_usuario_grupo').text(nome);
+
+            $('#resultados_pesquisa').empty();
+            $('#selecionar_app_container').show();
+            carregarApps();
+        });
+
+        // Carregar lista de apps
+        function carregarApps() {
+            $.ajax({
+                url: "{% url 'usuarios:liberar_permissoes' %}",
+                success: function (data) {
+                    $('#selecionar_app').html('<option value="">{% trans "-- Selecionar Aplicação --" %}</option>');
+                    data.apps.forEach(function (app) {
+                        $('<option>')
+                            .val(app)
+                            .text(app.charAt(0).toUpperCase() + app.slice(1))
+                            .appendTo('#selecionar_app');
+                    });
+                },
+                error: function (xhr) {
+                    console.error("Erro ao carregar apps:", xhr.responseText);
+                }
+            });
+        }
+
+        // Seleção de aplicativo
+        $('#selecionar_app').on('change', function () {
+            var appLabel = $(this).val();
+            if (appLabel) {
+                $('#app_label').val(appLabel);
+                $('#nome_app').text(appLabel.charAt(0).toUpperCase() + appLabel.slice(1));
+                carregarPermissoes(appLabel);
+                $('#permissoes_container').show();
+            } else {
+                $('#permissoes_container').hide();
+            }
+        });
+
+        // Carregar permissões
+        function carregarPermissoes(appLabel) {
+            $.ajax({
+                url: "{% url 'usuarios:liberar_permissoes' %}",
+                data: {
+                    'id': usuarioGrupoSelecionadoId,
+                    'tipo': tipoSelecionado,
+                    'app_label': appLabel
+                },
+                success: function (data) {
+                    var $lista = $('.lista_permissoes').empty();
+                    if (data.permissoes.length > 0) {
+                        data.permissoes.forEach(function (p) {
+                            $('<tr>')
+                                .append(`<td>${p.name}</td>`)
+                                .append(`<td><input type="checkbox" name="permissoes" value="${p.id}" ${data.permissoes_selecionadas.includes(p.id) ? 'checked' : ''}></td>`)
+                                .appendTo($lista);
+                        });
+                    } else {
+                        $('<tr><td colspan="2">{% trans "Nenhuma permissão encontrada." %}</td></tr>').appendTo($lista);
+                    }
+                },
+                error: function (xhr) {
+                    console.error("Erro ao buscar permissões:", xhr.responseText);
+                }
+            });
+        }
+
+        // Selecionar ou desmarcar todas as permissões
+        $('.selecionar_tudo').on('click', function () {
+            var $permissoesContainer = $(this).closest('#permissoes_container');
+            var checkboxes = $permissoesContainer.find('.lista_permissoes input[type="checkbox"]');
+            var selecionar = $(this).text().trim() === '{% trans "Selecionar Tudo" %}';
+            checkboxes.prop('checked', selecionar);
+            $(this).text(selecionar ? '{% trans "Desmarcar Tudo" %}' : '{% trans "Selecionar Tudo" %}');
+        });
+
+        // Interceptar o submit do formulário para AJAX
+        $('#form-permissoes').on('submit', function (e) {
+            e.preventDefault();
+            var formData = $(this).serialize();
+
+            $.ajax({
+                url: $(this).attr('action'),
+                method: 'POST',
+                data: formData,
+                success: function (response) {
+                    // Limpa mensagens
+                    $('#mensagens').empty();
+                    if (response.success) {
+                        $('#mensagens').html('<div class="alert alert-success">' + response.message + '</div>');
+                        // Você pode recarregar as permissões se quiser atualizar o estado:
+                        // carregarPermissoes($('#app_label').val());
+                    } else {
+                        $('#mensagens').html('<div class="alert alert-danger">' + response.message + '</div>');
+                    }
+                },
+                error: function (xhr) {
+                    $('#mensagens').empty();
+                    $('#mensagens').html('<div class="alert alert-danger">Ocorreu um erro ao salvar.</div>');
+                    console.error("Erro ao salvar permissões:", xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

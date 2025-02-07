@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>DANFE - {{ note.ide.nNF|default:'---' }}</title>
+  <style>
+    @page { size: A4; margin: 10mm; }
+    body { margin: 0; font-family: Arial, sans-serif; font-size: 11px; color: #000; }
+    .danfe-page { width: 190mm; margin: 0 auto; background: #fff; border: 1px solid #000; padding: 5px; }
+    .danfe-header-top { display: flex; justify-content: space-between; border-bottom: 1px solid #000; margin-bottom: 2px; padding-bottom: 2px; }
+    .danfe-header-top div { font-size: 10px; }
+    .danfe-header-top .valor-total { font-weight: bold; }
+    .danfe-header-nfe { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #000; margin-bottom: 2px; padding-bottom: 2px; }
+    .danfe-header-nfe-left { font-size: 12px; font-weight: bold; }
+    .danfe-header-nfe-right { text-align: right; font-size: 10px; }
+    .danfe-cabecalho { display: flex; border-bottom: 1px solid #000; padding-bottom: 4px; margin-bottom: 5px; }
+    .cabecalho-logo { width: 25%; text-align: center; }
+    .cabecalho-logo img { max-width: 100px; height: auto; }
+    .cabecalho-emitente { width: 45%; border-right: 1px solid #000; padding-right: 5px; margin-right: 5px; font-size: 10px; }
+    .cabecalho-danfe { width: 30%; font-size: 10px; }
+    .cabecalho-danfe .titulo-danfe { font-weight: bold; font-size: 14px; text-align: center; }
+    .cabecalho-danfe .chave-acesso { margin-top: 8px; text-align: center; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 5px; }
+    th, td { border: 1px solid #000; padding: 4px; vertical-align: top; }
+    th { background-color: #f1f1f1; }
+    .box-title { background-color: #eee; font-weight: bold; text-transform: uppercase; border: 1px solid #000; padding: 2px; margin-bottom: -1px; }
+    .secao-box { margin-bottom: 5px; }
+    .no-border th, .no-border td { border: none !important; }
+    .rodape-row { display: flex; gap: 10px; }
+    .rodape-col { flex: 1; border: 1px solid #000; padding: 5px; min-height: 50px; }
+    .rodape-col h3 { margin: 0 0 5px 0; font-size: 11px; border-bottom: 1px solid #000; }
+  </style>
+</head>
+<body>
+<div class="danfe-page">
+  <div class="danfe-header-top">
+    <div>
+      RECEBEMOS DE {{ note.emit.xNome|default:"EMITENTE DESCONHECIDO" }}<br>
+      OS PRODUTOS CONSTANTES NA NOTA FISCAL INDICADA AO LADO
+    </div>
+    <div class="valor-total">
+      VALOR TOTAL DA NOTA: 
+      {% if note.total and note.total.vNF %}
+        {{ note.total.vNF }}
+      {% else %}
+        0,00
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="danfe-header-nfe">
+    <div class="danfe-header-nfe-left">
+      NF-e<br>
+      Nº {{ note.ide.nNF|default:"---" }} - SÉRIE: {{ note.ide.serie|default:"0" }}
+    </div>
+    <div class="danfe-header-nfe-right">
+      <strong>Data Emissão:</strong> {{ note.ide.dhEmi|default:"--/--/----" }}<br>
+      <strong>Data Entrada/Saída:</strong> {{ note.ide.dhSaiEnt|default:"--/--/----" }}
+    </div>
+  </div>
+
+  <div class="danfe-cabecalho">
+    <div class="cabecalho-logo">
+      <img src="{{ logo_url|default:'' }}" alt="Logo Emitente">
+    </div>
+    <div class="cabecalho-emitente">
+      <strong>{{ note.emit.xNome|default:"Razão Social Emitente" }}</strong><br>
+      CNPJ: {{ note.emit.CNPJ|default:"--" }}<br>
+      Inscr. Estadual: {{ note.emit.IE|default:"---" }}<br>
+      {{ note.emit.enderEmit.xLgr|default:"" }}, Nº {{ note.emit.enderEmit.nro|default:"" }}
+      {% if note.emit.enderEmit.xCpl %}
+        - {{ note.emit.enderEmit.xCpl }}
+      {% endif %}<br>
+      {{ note.emit.enderEmit.xBairro|default:"" }} - {{ note.emit.enderEmit.xMun|default:"" }}/{{ note.emit.enderEmit.UF|default:"" }}<br>
+      CEP: {{ note.emit.enderEmit.CEP|default:"-----" }} - Fone: {{ note.emit.enderEmit.fone|default:"-----" }}<br>
+      {% if note.emit.IM %}
+        IM: {{ note.emit.IM }}
+      {% endif %}
+    </div>
+    <div class="cabecalho-danfe">
+      <div class="titulo-danfe">DANFE</div>
+      <div>Documento Auxiliar da NF-e</div>
+      <div>
+        <strong>Tipo:</strong>
+        {% if note.ide.tpNF == "0" %}Entrada{% else %}Saída{% endif %}
+      </div>
+      <div class="chave-acesso">
+        <strong>CHAVE DE ACESSO</strong><br>
+        {{ note.prot.chNFe|default:"---- ---- ---- ---- ---- ---- ---- ---- ----" }}
+      </div>
+    </div>
+  </div>
+
+  <table>
+    <tr>
+      <th>Natureza da Operação</th>
+      <th>Nº Protocolo</th>
+      <th>Data/Hora da Autorização</th>
+      <th>Inscr. Est. Subst. Tributário</th>
+    </tr>
+    <tr>
+      <td>{{ note.ide.natOp|default:"---" }}</td>
+      <td>{{ note.prot.nProt|default:"---" }}</td>
+      <td>{{ note.prot.dhRecbto|default:"---" }}</td>
+      <td>{{ note.emit.IEST|default:"---" }}</td>
+    </tr>
+  </table>
+
+  <div class="box-title">DESTINATÁRIO / REMETENTE</div>
+  <table>
+    <tr>
+      <td>
+        <strong>Nome/Razão Social:</strong> {{ note.dest.xNome|default:"---" }}<br>
+        <strong>CNPJ/CPF:</strong>
+        {% if note.dest.CNPJ %}
+          {{ note.dest.CNPJ }}
+        {% elif note.dest.CPF %}
+          {{ note.dest.CPF }}
+        {% else %}
+          ---
+        {% endif %}<br>
+        <strong>Endereço:</strong>
+        {% if note.dest.enderDest %}
+          {{ note.dest.enderDest.xLgr|default:"" }}, Nº {{ note.dest.enderDest.nro|default:"" }}
+          {% if note.dest.enderDest.xCpl %}
+            - {{ note.dest.enderDest.xCpl }}
+          {% endif %}<br>
+          {{ note.dest.enderDest.xBairro|default:"" }} -<br>
+          {{ note.dest.enderDest.xMun|default:"" }}/{{ note.dest.enderDest.UF|default:"" }} | CEP: {{ note.dest.enderDest.CEP|default:"---" }}<br>
+        {% else %}
+          ---
+        {% endif %}
+        <strong>IE:</strong> {{ note.dest.IE|default:"---" }}
+      </td>
+    </tr>
+  </table>
+
+  <div class="box-title">CÁLCULO DO IMPOSTO</div>
+  <table>
+    <tr>
+      <th>BASE DE CÁLC. DO ICMS</th>
+      <th>VALOR DO ICMS</th>
+      <th>BASE DE CÁLC. ICMS ST</th>
+      <th>VALOR DO ICMS ST</th>
+      <th>VALOR TOTAL DOS PRODUTOS</th>
+      <th>VALOR DO FRETE</th>
+      <th>VALOR DO SEGURO</th>
+      <th>DESCONTO</th>
+      <th>OUTRAS DESP. ACESSÓRIAS</th>
+      <th>VALOR DO IPI</th>
+      <th>VALOR TOTAL DA NOTA</th>
+    </tr>
+    <tr>
+      <td>{{ note.total.vBC|default:"0,00" }}</td>
+      <td>{{ note.total.vICMS|default:"0,00" }}</td>
+      <td>{{ note.total.vBCST|default:"0,00" }}</td>
+      <td>{{ note.total.vST|default:"0,00" }}</td>
+      <td>{{ note.total.vProd|default:"0,00" }}</td>
+      <td>{{ note.total.vFrete|default:"0,00" }}</td>
+      <td>{{ note.total.vSeg|default:"0,00" }}</td>
+      <td>{{ note.total.vDesc|default:"0,00" }}</td>
+      <td>{{ note.total.vOutro|default:"0,00" }}</td>
+      <td>{{ note.total.vIPI|default:"0,00" }}</td>
+      <td>{{ note.total.vNF|default:"0,00" }}</td>
+    </tr>
+  </table>
+
+  <div class="box-title">TRANSPORTADOR / VOLUMES TRANSPORTADOS</div>
+  <table>
+    <tr>
+      <th>FRETE POR CONTA</th>
+      <th>CÓDIGO ANTT</th>
+      <th>PLACA DO VEÍCULO</th>
+      <th>UF</th>
+      <th>CNPJ/CPF</th>
+    </tr>
+    <tr>
+      <td>{{ note.transp.modFrete|default:"9 - Sem Ocorrência de Transporte" }}</td>
+      <td>--</td>
+      <td>--</td>
+      <td>--</td>
+      <td>--</td>
+    </tr>
+  </table>
+
+  <!-- Seção para exibir os volumes transportados -->
+  <div class="box-title">VOLUMES TRANSPORTADOS</div>
+  {% if note.transp.vol %}
+    {% if note.transp.vol.0 %}
+      <table>
+        <tr>
+          <th>QTD</th>
+          <th>ESPÉCIE</th>
+          <th>MARCA</th>
+          <th>Nº VOL</th>
+          <th>PESO LÍQUIDO</th>
+          <th>PESO BRUTO</th>
+        </tr>
+        {% for vol in note.transp.vol %}
+          <tr>
+            <td>{{ vol.qVol|default:"---" }}</td>
+            <td>{{ vol.esp|default:"---" }}</td>
+            <td>{{ vol.marca|default:"---" }}</td>
+            <td>{{ vol.nVol|default:"---" }}</td>
+            <td>{{ vol.pesoL|default:"---" }}</td>
+            <td>{{ vol.pesoB|default:"---" }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% else %}
+      <table>
+        <tr>
+          <th>QTD</th>
+          <th>ESPÉCIE</th>
+          <th>MARCA</th>
+          <th>Nº VOL</th>
+          <th>PESO LÍQUIDO</th>
+          <th>PESO BRUTO</th>
+        </tr>
+        <tr>
+          <td>{{ note.transp.vol.qVol|default:"---" }}</td>
+          <td>{{ note.transp.vol.esp|default:"---" }}</td>
+          <td>{{ note.transp.vol.marca|default:"---" }}</td>
+          <td>{{ note.transp.vol.nVol|default:"---" }}</td>
+          <td>{{ note.transp.vol.pesoL|default:"---" }}</td>
+          <td>{{ note.transp.vol.pesoB|default:"---" }}</td>
+        </tr>
+      </table>
+    {% endif %}
+  {% else %}
+    <p>Nenhum volume informado.</p>
+  {% endif %}
+
+  <div class="box-title">DADOS DO PRODUTO/SERVIÇOS</div>
+  <table>
+    <tr>
+      <th>QTD</th>
+      <th>UNID</th>
+      <th>CÓDIGO</th>
+      <th>DESCRIÇÃO</th>
+      <th>NCM/SH</th>
+      <th>CST/CSOSN</th>
+      <th>CFOP</th>
+      <th>VALOR UNITÁRIO</th>
+      <th>VALOR TOTAL</th>
+      <th>BC ICMS</th>
+      <th>VALOR ICMS</th>
+      <th>ALIQ ICMS</th>
+    </tr>
+    {% if note.det %}
+      {% for item in note.det %}
+        {% with prod=item.prod %}
+          <tr>
+            <td>{{ prod.qCom|default:"1,00" }}</td>
+            <td>{{ prod.uCom|default:"UN" }}</td>
+            <td>{{ prod.cProd|default:"---" }}</td>
+            <td>{{ prod.xProd|default:"---" }}</td>
+            <td>{{ prod.NCM|default:"---" }}</td>
+            <td>
+              {% if item.imposto.ICMS %}
+                {% for icmsKey, icmsValue in item.imposto.ICMS.items %}
+                  {% if icmsValue.CST %}
+                    {{ icmsValue.CST }}
+                  {% elif icmsValue.CSOSN %}
+                    {{ icmsValue.CSOSN }}
+                  {% else %}
+                    ---
+                  {% endif %}
+                {% endfor %}
+              {% else %}
+                ---
+              {% endif %}
+            </td>
+            <td>{{ prod.CFOP|default:"---" }}</td>
+            <td>{{ prod.vUnCom|default:"0,00" }}</td>
+            <td>{{ prod.vProd|default:"0,00" }}</td>
+            {% if item.imposto.ICMS %}
+              {% for icmsKey, icmsValue in item.imposto.ICMS.items %}
+                {% if icmsValue.vBC %}
+                  <td>{{ icmsValue.vBC|default:"0,00" }}</td>
+                  <td>{{ icmsValue.vICMS|default:"0,00" }}</td>
+                  <td>{{ icmsValue.pICMS|default:"0,00" }}</td>
+                {% else %}
+                  <td>0,00</td>
+                  <td>0,00</td>
+                  <td>0,00</td>
+                {% endif %}
+              {% endfor %}
+            {% else %}
+              <td>0,00</td>
+              <td>0,00</td>
+              <td>0,00</td>
+            {% endif %}
+          </tr>
+        {% endwith %}
+      {% endfor %}
+    {% endif %}
+  </table>
+
+  <div class="rodape-row">
+    <div class="rodape-col">
+      <h3>CÁLCULO DO ISSQN</h3>
+      <table style="width:100%; border-collapse: collapse;">
+        <tr>
+          <th style="border:1px solid #000;">INSCRIÇÃO MUNICIPAL</th>
+          <th style="border:1px solid #000;">VALOR TOTAL DOS SERVIÇOS</th>
+          <th style="border:1px solid #000;">BASE DE CÁLC. DO ISSQN</th>
+          <th style="border:1px solid #000;">VALOR DO ISSQN</th>
+        </tr>
+        <tr>
+          <td style="border:1px solid #000;">{% if note.emit.IM %}{{ note.emit.IM }}{% else %}---{% endif %}</td>
+          <td style="border:1px solid #000;">0,00</td>
+          <td style="border:1px solid #000;">0,00</td>
+          <td style="border:1px solid #000;">0,00</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="rodape-col">
+      <h3>DADOS ADICIONAIS</h3>
+      <div>{{ note.infAdic|default:"Nenhuma observação adicional." }}</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

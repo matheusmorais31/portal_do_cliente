@@ -1,0 +1,138 @@
+/* Estilização Geral */
+body {
+    font-family: 'Inter', sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    
+}
+
+.container {
+    max-width: 600px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.308);
+    text-align: center;
+}
+
+/* Título */
+h1 {
+    font-size: 28px;
+    color: #000000;
+    margin-bottom: 15px;
+}
+
+/* Informação do Cliente */
+p {
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: #555;
+}
+
+p strong {
+    color: #333;
+}
+
+/* Formulário */
+form {
+    text-align: left;
+}
+
+form .form-text {
+    font-size: 14px;
+    color: #777;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+form .form-text.text-muted {
+    display: block;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #ff0000;
+    text-align: left; /* Ajuste para alinhar com o formulário */
+}
+
+/* Botões */
+button.btn {
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+button.btn-primary {
+    background-color: #1F6B5C;
+    color: #fff;
+}
+
+button.btn-primary:hover {
+    background-color: #155b49;
+}
+
+button.btn-secondary {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+button.btn-secondary:hover {
+    background-color: #565e64;
+}
+
+a.btn-secondary {
+    text-decoration: none;
+    display: inline-block;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #6c757d;
+    transition: background-color 0.3s;
+}
+
+a.btn-secondary:hover {
+    background-color: #565e64;
+}
+
+/* Inputs */
+form input[type="text"],
+form input[type="password"],
+form input[type="email"],
+form select {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    margin-bottom: 15px;
+    transition: border-color 0.3s, background-color 0.3s;
+}
+
+form input:focus,
+form select:focus {
+    border-color: #1F6B5C;
+    background-color: #fff;
+    outline: none;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    button.btn,
+    a.btn-secondary {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+}

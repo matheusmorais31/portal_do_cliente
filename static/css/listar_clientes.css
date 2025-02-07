@@ -1,0 +1,236 @@
+/* Geral */
+body {
+    font-family: 'Inter';
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    padding: 20px;
+}
+
+/* Títulos */
+h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #000;
+    margin-top: 5%;
+}
+
+/* Filtros */
+.filters-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.search-container {
+    flex: 1 1 300px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #aaa;
+    background-color: #f9f9f9;
+    color: #333;
+    font-size: 16px;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.search-input:focus {
+    border-color: #337366;
+    background-color: #fff;
+    outline: none;
+}
+
+/* Ajustes para os filtros de seleção */
+.filter-select {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #aaa;
+    background-color: #fff;
+    color: #333;
+    font-size: 16px;
+    width: 200px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.filter-select:focus {
+    border-color: #337366;
+    box-shadow: 0 0 5px rgba(51, 115, 102, 0.5);
+    outline: none;
+}
+
+.clear-filters-button {
+    padding: 10px 15px;
+    background-color: #1F6B5C;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.clear-filters-button:hover {
+   transform: scale(1.1);
+
+}
+
+/* Lista de Clientes */
+.client-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.client-container {
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.client-container:hover {
+    transform: scale(1.02);
+}
+
+.client-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.client-grid div {
+    margin: 5px 0;
+}
+
+.client-grid div strong {
+    color: #555;
+}
+
+/* Estilização de Campos Específicos */
+.password-field {
+    font-style: italic;
+    color: #888;
+}
+
+.status-active {
+    color: #28a745; /* Verde */
+    font-weight: bold;
+}
+
+.status-inactive {
+    color: #dc3545; /* Vermelho */
+    font-weight: bold;
+}
+
+/* Botões de Ação */
+.client-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.action-icon {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    text-decoration: none;
+    position: relative; 
+    border: none;       
+    outline: none;      
+    background: none; 
+    padding: 0;
+}
+
+.action-icon img {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    transition: transform 0.3s ease;
+}
+
+.action-icon:hover img {
+    transform: scale(1.2);
+}
+
+.action-icon span {
+    font-size: 14px;
+    color: #ffffff;
+}
+
+/* Tooltip */
+.tooltip-text {
+    visibility: hidden;
+    width: max-content;
+    background-color: #3C4855;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 100%; /* Coloca o tooltip acima do botão */
+    left: 50%; /* Centraliza horizontalmente */
+    transform: translateX(-50%); /* Ajusta o alinhamento horizontal */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    white-space: nowrap;
+}
+
+.tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%; /* Posiciona a seta abaixo do tooltip */
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent; /* Seta apontando para baixo */
+}
+
+.action-icon:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .filters-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-input,
+    .filter-select {
+        width: 100%;
+    }
+
+    .client-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .client-actions {
+        justify-content: center;
+        margin-top: 10px;
+    }
+}
+
+/* Mensagens */
+.no-clients-message,
+.no-results-message {
+    text-align: center;
+    margin-top: 20px;
+    color: #777;
+    font-size: 16px;
+}

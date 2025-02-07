@@ -1,0 +1,127 @@
+/* Estilização Geral */
+body {
+    font-family: 'Inter', sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    
+}
+
+.container {
+    max-width: 800px;
+    /* margin-top: 5%; */
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Título */
+h2 {
+    font-size: 24px;
+    color: #000000;
+    margin-bottom: 20px;
+}
+
+/* Campo de Busca */
+#searchInput {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 16px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s, background-color 0.3s;
+}
+
+#searchInput:focus {
+    border-color: #1F6B5C;
+    background-color: #fff;
+    outline: none;
+}
+
+/* Lista de Clientes */
+.client-list {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.client-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.client-item:hover {
+    box-shadow: 0 4px 10px rgba(31, 107, 92, 0.2);
+    transform: translateY(-2px);
+}
+
+.client-item input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.client-item label {
+    font-size: 16px;
+    color: #333;
+}
+
+/* Botão de Importação */
+#importButton {
+    margin-top: 1%;
+    display: block;
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #3C4855;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, opacity 0.3s;
+}
+
+#importButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+#importButton:hover:enabled {
+    background-color: #828991;
+}
+
+/* Mensagens */
+.text-muted {
+    color: #777;
+    font-size: 14px;
+}
+
+.text-danger {
+    color: #dc3545;
+    font-size: 14px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    #searchInput,
+    #importButton {
+        font-size: 14px;
+    }
+
+    .client-item label {
+        font-size: 14px;
+    }
+}

@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load l10n %}
+{% load humanize %}
+{% load pedido_extras %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/meus_pedidos.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2>Meus Pedidos</h2>
+
+  <!-- Seção de Filtros: Pedido, NF, Produto e Valor -->
+  <div class="filters-container">
+    <div class="search-container">
+      <input type="text" id="pedidoFilter" class="search-input" placeholder="Buscar pedidos pelo Número...">
+    </div>
+    <div class="filter-container">
+      <input type="text" id="nfFilter" class="search-input" placeholder="Buscar pedidos pela NF...">
+    </div>
+    <div class="filter-container">
+      <input type="text" id="produtoFilter" class="search-input" placeholder="Buscar pedidos pelo Produto...">
+    </div>
+    <div class="filter-container">
+      <input type="text" id="valorFilter" class="search-input" placeholder="Buscar pedidos pelo Valor...">
+    </div>
+    <div class="filter-container">
+      <button id="clearFilters" class="clear-filters-button">Limpar Filtros</button>
+    </div>
+  </div>
+
+  <!-- Lista de Pedidos -->
+  <div class="pedido-list" id="pedidoList">
+    {% if pedidos %}
+      {% regroup pedidos|dictsortreversed:"PEDIDO" by PEDIDO as pedidos_agrupados %}
+      {% for group in pedidos_agrupados %}
+        {% with lista=group.list %}
+          {% if lista %}
+            {% with primeiro=lista|first %}
+              {% with nfs_distintas=lista|pluck:'NF_NUMERO'|exclude:''|unique %}
+
+                <div class="pedido-container"
+                     data-pedido="{{ group.grouper|default:'' }}"
+                     data-nf="{{ primeiro.SEQUENCIAL_TECNICON|default:'' }}"
+                     data-produto="{{ primeiro.PRODUTO_DESCRICAO|default:''|lower }}"
+                     data-valor="{{ primeiro.TOTAL_NF|default:'' }}">
+                  
+                  <!-- Seção do Pedido -->
+                  <section class="pedido-wrapper">
+                    <header class="pedido-cabecalho">
+                      <div class="pedido-info">
+                        <p class="pedido-numero">
+                          <strong>Pedido:</strong> {{ group.grouper }}
+                          <br>
+                          <strong>Data Pedido:</strong> {{ primeiro.DT_INCLUSAO }}
+                        </p>
+                      </div>
+                      <div class="step-indicator">
+                        <div class="step">
+                          <img src="{% static 'images/pedido_incluido.png' %}" 
+                               alt="Pedido Incluído" class="status-icon">
+                          <div class="circle {% if primeiro.is_included %}active{% endif %}"></div>
+                          <div class="label">Pedido Incluído</div>
+                        </div>
+                        <div class="step-line {% if primeiro.is_partial or primeiro.is_integral %}active{% endif %}"></div>
+                        <div class="step">
+                          <img src="{% static 'images/faturamento_parcial.png' %}" 
+                               alt="Faturamento Parcial" class="status-icon">
+                          <div class="circle {% if primeiro.is_partial %}active{% endif %}"></div>
+                          <div class="label">Faturamento Parcial</div>
+                        </div>
+                        <div class="step-line {% if primeiro.is_integral %}active{% endif %}"></div>
+                        <div class="step">
+                          <img src="{% static 'images/faturamento_integral.png' %}" 
+                               alt="Faturamento Integral" class="status-icon">
+                          <div class="circle {% if primeiro.is_integral %}active{% endif %}"></div>
+                          <div class="label">Faturamento Integral</div>
+                        </div>
+                      </div>
+                    </header>
+
+                    <!-- Dados de Entrega -->
+                    <div class="delivery-info">
+                      <h3>Dados do Entrega</h3>
+                      <p><strong>Cliente:</strong> {{ primeiro.NOME_CLIENTE }}</p>
+                      <p><strong>Cidade:</strong> {{ primeiro.CIDADE_ENTREGA }}</p>
+                      <p><strong>UF:</strong> {{ primeiro.UF_ENTREGA }}</p>
+                      <p><strong>Endereço:</strong> {{ primeiro.ENDERECO_ENTREGA }}</p>
+                      <p><strong>Número:</strong> {{ primeiro.NUMERO_ENTREGA }}</p> 
+                      {% if primeiro.TOTAL_NF %}
+                        <p>
+                          <strong>Valor Total:</strong>
+                          R${{ primeiro.TOTAL_NF|floatformat:2|intcomma }}
+                        </p>
+                      {% endif %}
+                    </div>
+
+                    <!-- Botões de Ação (2 linhas: "Ver Produtos" + DANFEs) -->
+                    <div class="pedido-actions">
+                      <!-- Botão "Ver Produtos" -->
+                      <div class="botao-produtos">
+                        <button class="btn-toggle btn-produtos" data-target="detalhes-{{ forloop.counter }}">
+                          Ver Produtos
+                        </button>
+                      </div>
+
+                      <!-- Botões para DANFEs -->
+                      <div class="botao-danfe-group">
+                        {% for nf in nfs_distintas %}
+                          {% if nf %}
+                            <button class="btn-toggle nf-button"
+                                    onclick="window.open('{% url 'clientes:visualizar_danfe_html' nf %}', '_blank')">
+                              DANFE {{ nf }}
+                            </button>
+                          {% else %}
+                            <span class="nf-indisponivel">NF não disponível</span>
+                          {% endif %}
+                        {% endfor %}
+                      </div>
+                    </div>
+
+                    <!-- Detalhes do Pedido (oculto inicialmente) -->
+                    <article class="pedido-detalhes hidden" id="detalhes-{{ forloop.counter }}">
+                      <h3>Produtos</h3>
+                      {% for ped in lista %}
+                        <div class="pedido-detalhe">
+                          <p><strong>Data Inclusão:</strong> {{ ped.DT_INCLUSAO|date:"d/m/Y" }}</p>
+                          <p><strong>Cód. Produto:</strong> {{ ped.PRODUTO_CODIGO }}</p>
+                          <p><strong>Ref. Produto:</strong> {{ ped.PRODUTO_REFERENCIA }}</p>
+                          <p><strong>Produto:</strong> {{ ped.PRODUTO_DESCRICAO }}</p>
+                          <p><strong>Quantidade:</strong> {{ ped.PEDIDO_QUANTIDADE }}</p>
+                          <p>
+                            <strong>Valor:</strong>
+                            R${{ ped.NF_TOTAL_ITEM|floatformat:2|intcomma }}
+                          </p>
+                          <p><strong>Status:</strong> {{ ped.STATUS_PEDIDO }}</p>
+                          {% if ped.NF_NUMERO %}
+                            <p><strong>NF:</strong> {{ ped.NF_NUMERO }}</p>
+                          {% endif %}
+                        </div>
+                      {% endfor %}
+                    </article>
+                  </section>
+                </div>
+
+              {% endwith %}
+            {% endwith %}
+          {% else %}
+            <p style="color:red;">Nenhum item neste grupo.</p>
+          {% endif %}
+        {% endwith %}
+      {% endfor %}
+    {% else %}
+      <p>Nenhum pedido encontrado.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Botões que exibem/ocultam os produtos
+  const toggleButtons = document.querySelectorAll('.btn-toggle');
+  toggleButtons.forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      // Previna o comportamento padrão apenas para o botão "Ver Produtos"
+      if (btn.hasAttribute('data-target')) {
+        e.preventDefault();
+        const targetId = btn.getAttribute('data-target');
+        const detalhes = document.getElementById(targetId);
+        if (detalhes) {
+          detalhes.classList.toggle('hidden');
+          btn.textContent = detalhes.classList.contains('hidden') ? "Ver Produtos" : "Ocultar Produtos";
+        }
+      }
+    });
+  });
+
+  // Filtros
+  const pedidoFilter = document.getElementById('pedidoFilter');
+  const nfFilter = document.getElementById('nfFilter');
+  const produtoFilter = document.getElementById('produtoFilter');
+  const valorFilter = document.getElementById('valorFilter');
+  const clearFiltersButton = document.getElementById('clearFilters');
+  const pedidoList = document.getElementById('pedidoList');
+  const pedidos = pedidoList.getElementsByClassName('pedido-container');
+
+  function filterPedidos() {
+    const pedidoValue = pedidoFilter.value.toLowerCase();
+    const nfValue = nfFilter.value.toLowerCase();
+    const produtoValue = produtoFilter.value.toLowerCase();
+    const valorValue = valorFilter.value.toLowerCase();
+    
+    Array.from(pedidos).forEach(pedido => {
+      const dataPedido = (pedido.getAttribute('data-pedido') || '').toLowerCase();
+      const dataNf = (pedido.getAttribute('data-nf') || '').toLowerCase();
+      const dataProduto = (pedido.getAttribute('data-produto') || '').toLowerCase();
+      const dataValor = (pedido.getAttribute('data-valor') || '').toLowerCase();
+      let match = true;
+      
+      if (pedidoValue && !dataPedido.includes(pedidoValue)) match = false;
+      if (nfValue && !dataNf.includes(nfValue)) match = false;
+      if (produtoValue && !dataProduto.includes(produtoValue)) match = false;
+      if (valorValue && !dataValor.includes(valorValue)) match = false;
+
+      pedido.style.display = match ? "" : "none";
+    });
+  }
+
+  pedidoFilter.addEventListener('input', filterPedidos);
+  nfFilter.addEventListener('input', filterPedidos);
+  produtoFilter.addEventListener('input', filterPedidos);
+  valorFilter.addEventListener('input', filterPedidos);
+
+  clearFiltersButton.addEventListener('click', function() {
+    pedidoFilter.value = "";
+    nfFilter.value = "";
+    produtoFilter.value = "";
+    valorFilter.value = "";
+    filterPedidos();
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,476 @@
+/* Estilos básicos */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #DCDCDC;
+    color: #ffffff;
+    
+}
+
+/* Barra superior */
+.top-bar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 50px;
+    background-color: #1F6B5C;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 1000;
+    border-bottom: 2px solid #7c7c7c;
+    
+}
+
+/* Agrupando notificações e perfil à direita */
+.top-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    /* Espaço entre as notificações e o perfil */
+}
+
+/* Ícone do menu superior */
+.menu-icon {
+    font-size: 24px;
+    cursor: pointer;
+    color: #ffffff;
+}
+
+
+/* Barra lateral */
+.side-bar {
+    position: fixed;
+    top: 50px;
+    left: 0;
+    width: 60px;
+    height: calc(100% - 30px);
+    background-color: #3C4855;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 10px;
+    z-index: 1000;
+    transition: width 0.3s;
+    border-right: 2px solid #7c7c7c;
+}
+
+.side-bar.expanded {
+    width: 250px;
+}
+
+.side-bar ul {
+    list-style-type: none;
+    width: 100%;
+}
+
+.side-bar ul li {
+    margin: 10px 0;
+    position: relative;
+}
+
+.side-bar ul li a {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 10px 10px;
+    width: 100%;
+
+    height: 40px;
+}
+
+.side-bar ul li a:hover {
+    background-color: #6aada085;
+}
+
+.side-bar ul li a img {
+    width: 30px;
+    margin-right: 10px;
+}
+
+.menu-label {
+    margin-left: 5px;
+    opacity: 0;
+    white-space: nowrap;
+    transition: opacity 0.3s, visibility 0.3s;
+    visibility: hidden;
+}
+
+.side-bar.expanded ul li a img {
+    margin-left: 20px;
+}
+
+.side-bar.expanded .menu-label {
+    opacity: 1;
+    visibility: visible;
+}
+
+.submenu {
+    display: none;
+    position: absolute;
+    background-color: #337366;
+    border: 1px solid #1F6B5C;
+    padding: 0;
+    z-index: 1001;
+    min-width: 220px;
+    transition: all 0.3s ease;
+}
+
+.side-bar:not(.expanded) .submenu {
+    top: 0;
+    left: 100%;
+}
+
+.side-bar.expanded .submenu {
+    top: 100%;
+    left: 0;
+}
+
+.submenu.open {
+    display: block;
+}
+
+.submenu li {
+    padding: 0;
+}
+
+.submenu li a {
+    color: #fff;
+    text-decoration: none;
+    display: block;
+    padding: 10px 20px;
+    white-space: nowrap;
+}
+
+.submenu li a:hover {
+    background-color: #333;
+}
+
+.side-bar:not(.expanded) ul li:hover .submenu {
+    display: block;
+}
+
+/* Ajuste de margem para o conteúdo principal quando o menu lateral está expandido */
+.main-content {
+    margin-left: 60px;
+    padding-top: 50px;
+    min-height: 100vh;
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+}
+
+.side-bar.expanded~.main-content {
+    margin-left: 250px;
+}
+
+/* Estilos para o ícone do perfil */
+.profile-icon {
+    display: flex;
+    align-items: center;
+}
+
+.profile-icon img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    /* Garante que a imagem seja proporcional */
+    aspect-ratio: 1 / 1;
+    /* Mantém a imagem sempre quadrada */
+}
+
+/* Ajustando a posição da foto dentro da barra superior */
+.top-bar-right .profile-icon {
+    margin-left: 10px;
+}
+
+/* Estilos para o dropdown do perfil */
+.profile-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: #141313;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 250px;
+    z-index: 100;
+    border: 0.1px solid #fffcfc;
+}
+
+.profile-menu.open {
+    display: block;
+}
+
+.profile-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.profile-menu ul li {
+    padding: 10px;
+}
+
+.profile-menu ul li a {
+    text-decoration: none;
+    color: #ffffff;
+    display: block;
+}
+
+.profile-info {
+    padding: 10px;
+    background-color: #000000;
+    text-align: center;
+}
+
+.profile-info p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+
+/* Estilos para a campainha de notificações */
+.notification-bell {
+    position: relative;
+    display: inline-block;
+    margin-right: -5px;
+}
+
+.bell-icon {
+    width: 30px;
+    cursor: pointer;
+}
+
+.notification-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #ff0000;
+    box-shadow: 0px 0px 15px #ff0000;
+    color: white;
+    border-radius: 50%;
+    padding: 5px 7px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Ajustando a altura máxima para o dropdown de notificações */
+.notification-dropdown {
+    display: none;
+    position: absolute;
+    top: 25px;
+    right: 0;
+    background-color: #333;
+    color: white;
+    width: 500px;
+    border-radius: 20px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border: 2px solid rgb(184, 180, 180);
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.notification-dropdown.open {
+    display: block;
+}
+
+.notification-dropdown ul {
+    list-style-type: none;
+    padding: 10px;
+    margin: 0;
+}
+
+/* Estilos para o botão "Limpar Todas" */
+.clear-all-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #1EB2C1;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 10px;
+    transition: background-color 0.3s;
+}
+
+.clear-all-button:hover {
+    background-color: #2EC2D6;
+    box-shadow: 0px 0px 10px #2EC2D6;
+}
+
+/* Ajuste para espaçamento entre o botão e a lista de notificações */
+.notification-dropdown ul {
+    padding: 10px;
+    margin: 0;
+}
+
+/* Ajuste para a lista de notificações */
+.notification-dropdown ul li {
+    position: relative;
+    /* Necessário para posicionar o botão de fechar */
+    padding: 15px 10px 10px 10px;
+    /* Espaçamento interno */
+    background-color: #202020;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    border: 0.5px solid rgb(145, 142, 142);
+    display: flex;
+    flex-direction: column;
+    /* Alinha o conteúdo verticalmente */
+    align-items: flex-start;
+}
+
+.logout-link{
+    color: #ffffff;
+}
+
+/* Estilos para o container de controles da notificação */
+.notification-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Centraliza os itens horizontalmente */
+}
+
+/* Ajuste para centralizar o botão de fechar e garantir que não sobreponha o texto */
+.notification-dropdown ul li .close-notification {
+    position: absolute;
+    top: 0.5px;
+    right: 5px;
+    background-color: transparent;
+    border: none;
+    color: rgb(255, 0, 0);
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.close-notification:hover {
+    transform: scale(1.2);
+    text-shadow: 0px 0px 20px #ff0000;
+}
+
+/* Ajuste da mensagem da notificação */
+.notification-message {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    width: 100%;
+    /* Garante que o conteúdo ocupe a largura completa */
+    margin-bottom: 10px;
+    /* Espaço entre a mensagem e o link "Ir para" */
+}
+
+.notification-message img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    aspect-ratio: 1 / 1;
+    margin-right: 10px;
+    border: 0.5px solid rgb(145, 142, 142);
+}
+
+.notification-message img:hover {
+    transform: scale(1.5);
+}
+
+.notification-message p {
+    margin: 0;
+    font-size: 14px;
+    color: white;
+    flex-grow: 1;
+}
+
+/* Estilos para os controles da notificação */
+.notification-controls {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    /* Centraliza horizontalmente */
+}
+
+/* Estilos para o botão "Ir para" */
+.notification-action {
+    color: #1EB2C1;
+    font-size: 14px;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 1px;
+    padding: 5px 10px;
+    /* Adicione padding para melhor aparência */
+
+    border-radius: 5px;
+    /* Opcional: borda arredondada */
+    transition: all 0.3s;
+}
+
+.notification-action:hover {
+    text-shadow: 0px 0px 10px #2EC2D6;
+    transform: scale(1.05);
+    /* Redução de escala para melhor efeito */
+
+}
+
+/* Estilo para quando não há notificações */
+.no-notifications {
+    text-align: center;
+    padding: 20px;
+    font-size: 16px;
+    color: #cccccc;
+}
+
+@media (max-width: 650px) {
+    .notification-dropdown {
+        width: 400px;
+    }
+
+}
+
+@media (max-width: 550px) {
+    .notification-dropdown {
+        right: -180%;
+        z-index: 9999;
+    }
+}
+
+@media (max-width: 480px){
+    .notification-dropdown {
+        width: 250px;
+    }
+}
+
+.logo-bottom-right {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    z-index: -1;
+}
+
+.logo-bottom-right img {
+    max-width: 100px; /* Ajuste o tamanho da logo */
+    height: auto;
+    transition: transform 0.3s ease;
+ 
+}
+
+
+@media (max-width: 600px) {
+    .logo-bottom-right img {
+        max-width: 70px; /* Reduz o tamanho da logo em telas menores */
+    }
+}

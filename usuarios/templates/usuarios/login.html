@@ -1,0 +1,78 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <!-- Garante que o layout será escalado corretamente em dispositivos móveis -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal do Cliente</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <link rel="shortcut icon" href="{% static 'images/favicon.png' %}">
+</head>
+<body>
+    <div class="login-container">
+        <!-- Seção da Esquerda com Logotipo -->
+        <div class="left-section">
+            <img src="{% static 'images/logo-login.png' %}" alt="Logo" class="logo">
+        </div>
+
+        <!-- Seção da Direita com Formulário -->
+        <div class="right-section">
+            <h2>Portal do Cliente</h2>
+            {% if form.errors %}
+                <p style="color: red;">Usuário ou senha inválidos.</p>
+            {% endif %}
+            <form method="post" style="width: 100%;">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_username">Usuário:</label>
+                    {{ form.username }}
+                </div>
+                <div class="form-group password-group">
+                    <label for="id_password">Senha:</label>
+                    <div class="password-wrapper">
+                        {{ form.password }}
+                        <span class="toggle-password" id="togglePassword">
+                            <!-- Ícone de Olho SVG -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#ccc" viewBox="0 0 24 24">
+                                <path d="M12 5c-7.633 0-12 7-12 7s4.367 7 12 7 12-7 12-7-4.367-7-12-7zm0 12c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5zm0-8c-1.654 0-3 1.346-3 3s1.346 3 3 3 3-1.346 3-3-1.346-3-3-3z"/>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+                <button type="submit" class="login-button">Entrar</button>
+            </form>
+            <div class="contact-info">
+                <p>☎ (54) 3331-6230 Segunda a Sexta, das 07:30 às 17:30</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript para alternar a visibilidade da senha -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('id_password');
+
+            togglePassword.addEventListener('click', function () {
+                // Alterna o tipo de input
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+
+                // Alterna o ícone (opcional)
+                this.innerHTML = type === 'password' ? `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#ccc" viewBox="0 0 24 24">
+                        <path d="M12 5c-7.633 0-12 7-12 7s4.367 7 12 7 12-7 12-7-4.367-7-12-7zm0 12c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5zm0-8c-1.654 0-3 1.346-3 3s1.346 3 3 3 3-1.346 3-3-1.346-3-3-3z"/>
+                    </svg>
+                ` : `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#ccc" viewBox="0 0 24 24">
+                        <path d="M12 5c-7.633 0-12 7-12 7s4.367 7 12 7 12-7 12-7-4.367-7-12-7zm0 12c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5zm0-8c-1.654 0-3 1.346-3 3s1.346 3 3 3 3-1.346 3-3-1.346-3-3-3z"/>
+                        <line x1="1" y1="1" x2="23" y2="23" stroke="#ccc" stroke-width="2"/>
+                    </svg>
+                `;
+            });
+        });
+    </script>
+</body>
+</html>
